@@ -4,6 +4,8 @@ from slackclient import SlackClient
 from get_channels_info import *
 import argparse
 
+rate_limit_sec = 1.0
+
 def get_messages(sc, slack_args, messages, filter_func):
     history = sc.api_call("channels.history", **slack_args)
     last_ts = history['messages'][-1]['ts'] if ('has_more' in history and history['has_more']) else False
@@ -24,7 +26,7 @@ def scrape_slack(token, slack_args, filter_func = lambda x: x):
     while results['last_ts']:
         slack_args['latest'] = results['last_ts']
         results = get_messages(sc, slack_args, results['messages'], filter_func)
-        time.sleep(1)
+        time.sleep(rate_limit_sec)
 
     print('Done fetching messages. Found {} in total.'.format(len(results['messages'])))
     return results['messages']
@@ -37,6 +39,7 @@ def find_channel_by(key, val, return_key='name'):
 
 if __name__ == '__main__':
     config = load_json('./env.json')
+    rate_limit_sec = 0.300
 
     ap = argparse.ArgumentParser()
     ap.add_argument('-c', '--channel', help = 'channel id to scrape')
