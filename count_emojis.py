@@ -1,5 +1,5 @@
 import re
-from json_utils import load_json
+from json_utils import *
 import operator
 import os
 import pprint
