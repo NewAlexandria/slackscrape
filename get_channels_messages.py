@@ -51,4 +51,4 @@ if __name__ == '__main__':
             all_messages = new_messages + old_json
             dump_json(dump_path, all_messages)
 
-        time.sleep(.500)
+        time.sleep(1)

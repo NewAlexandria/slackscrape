@@ -24,6 +24,7 @@ def scrape_slack(token, slack_args, filter_func = lambda x: x):
     while results['last_ts']:
         slack_args['latest'] = results['last_ts']
         results = get_messages(sc, slack_args, results['messages'], filter_func)
+        time.sleep(1)
 
     print('Done fetching messages. Found {} in total.'.format(len(results['messages'])))
     return results['messages']
