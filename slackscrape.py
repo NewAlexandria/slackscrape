@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-from json_utils import load_json, dump_json
+from json_utils import *
 from slackclient import SlackClient
+from get_channels_info import *
 import argparse
 
 def get_messages(sc, slack_args, messages, filter_func):
@@ -26,6 +27,12 @@ def scrape_slack(token, slack_args, filter_func = lambda x: x):
     print('Done fetching messages. Found {} in total.'.format(len(results['messages'])))
     return results['messages']
 
+def find_channel_by(key, val):
+    channels = all_channels_info('')
+    for chan in channels:
+        if chan['id'] == channel:
+            return chan['name']
+
 if __name__ == '__main__':
     config = load_json('./env.json')
 
@@ -34,16 +41,22 @@ if __name__ == '__main__':
     ap.add_argument('-o', '--output', help = 'file to save out')
     args = vars(ap.parse_args())
     channel = args['channel']
-    output = args['output']
+    output = args['output'] or 'general'
+
+    channel_name = find_channel_by('id', channel)
+    print channel_name
+
+    channel_path = ensure_dir('./output/channels/{}/messages/'.format(channel_name))
+    dump_path    = '{}/{}.json'.format(channel_path, output)
 
     try:
-        old_json = load_json(output)
+        old_json = load_json(dump_path)
     except Exception as e:
         old_json = []
         print('No existing messages, starting from scratch...')
 
     slack_args = {
-        'channel': config['channel_id'],
+        'channel': channel,
         'oldest': old_json[0]['ts'] if len(old_json) else '',
     }
 
@@ -51,4 +64,4 @@ if __name__ == '__main__':
 
     if len(new_messages):
         all_messages = new_messages + old_json
-        dump_json(output, all_messages)
+        dump_json(dump_path, all_messages)
