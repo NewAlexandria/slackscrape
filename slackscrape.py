@@ -4,11 +4,12 @@ from slackclient import SlackClient
 from get_channels_info import *
 import argparse
 
-rate_limit_sec = 1.0
+rate_limit_sec = 1.0  # default rate limiting, for import callers
+oldest_time = '' # 1467331200
 
 def get_messages(sc, slack_args, messages, filter_func):
     history = sc.api_call("channels.history", **slack_args)
-    last_ts = history['messages'][-1]['ts'] if ('has_more' in history and history['has_more']) else False
+    last_ts = history['messages'][-1]['ts'] if ('has_more' in history and history['has_more'] == True ) else False
     hist_messages =  history['messages'] if ('messages' in history) else []
     filtered = list(filter(filter_func, hist_messages))
     all_messages = messages + filtered
@@ -62,7 +63,7 @@ if __name__ == '__main__':
 
     slack_args = {
         'channel': channel,
-        'oldest': old_json[0]['ts'] if len(old_json) else '',
+        'oldest': old_json[0]['ts'] if len(old_json) else oldest_time,
     }
 
     new_messages = scrape_slack(config['token'], slack_args)
