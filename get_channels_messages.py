@@ -44,6 +44,7 @@ if __name__ == '__main__':
         slack_args = {
             'channel': channel['id'],
             'oldest': old_json[0]['ts'] if len(old_json) else oldest_time,
+            'count': '700',
         }
 
         new_messages = scrape_slack(config['token'], slack_args)
