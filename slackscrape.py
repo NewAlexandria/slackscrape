@@ -40,7 +40,7 @@ def find_channel_by(key, val, return_key='name'):
 
 if __name__ == '__main__':
     config = load_json('./env.json')
-    rate_limit_sec = 0.300
+    rate_limit_sec = 0.500
 
     ap = argparse.ArgumentParser()
     ap.add_argument('-c', '--channel', help = 'channel id to scrape')

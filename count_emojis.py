@@ -83,7 +83,7 @@ for channel in master_count:
         add_emoji_hit('emojis_reactions', reaction, master_count[channel]['emojis_reactions'][reaction])
 
 
-sorted_emojis = sorted(master_emojis_count['emojis'].items(), key=operator.itemgetter(1), reverse=True)
+sorted_emojis    = sorted(master_emojis_count['emojis'          ].items(), key=operator.itemgetter(1), reverse=True)
 sorted_reactions = sorted(master_emojis_count['emojis_reactions'].items(), key=operator.itemgetter(1), reverse=True)
 
 pp = pprint.PrettyPrinter(indent=2)
