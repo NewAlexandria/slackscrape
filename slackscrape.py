@@ -2,10 +2,8 @@
 from json_utils import *
 from slackclient import SlackClient
 from get_channels_info import *
-import argparse
 
 rate_limit_sec = 1.0  # default rate limiting, for import callers
-oldest_time = '' # 1467331200
 
 def get_messages(sc, slack_args, messages, filter_func):
     history = sc.api_call("channels.history", **slack_args)
@@ -32,43 +30,52 @@ def scrape_slack(token, slack_args, filter_func = lambda x: x):
     print('Done fetching messages. Found {} in total.'.format(len(results['messages'])))
     return results['messages']
 
+def scrape_start_time(old_messages, update):
+    channel_oldest_time = ''
+    if update:
+        channel_oldest_time = None
+        if len(old_messages):
+            try:
+                channel_oldest_time = old_messages[0]['ts']
+            except Exception as e:
+                channel_oldest_time = ''
+    return channel_oldest_time
+
 def find_channel_by(key, val, return_key='name'):
     channels = all_channels_info('')
     for chan in channels:
         if chan[key] == val:
             return chan[return_key]
 
+def get_channel_for(args):
+    if args['channel_name']:
+        channel_name = args['channel_name'].encode('utf-8')
+        channel = find_channel_by('name', channel_name, 'id')
+    else:
+        channel = args['channel']
+        channel_name = find_channel_by('id', channel).encode('utf-8')
+
+    print( [channel_name, channel] )
+    return {'id': channel, 'name': channel_name}
+
+
 if __name__ == '__main__':
     config = load_json('./env.json')
     rate_limit_sec = 0.500
 
-    ap = argparse.ArgumentParser()
-    ap.add_argument('-c', '--channel', help = 'channel id to scrape')
-    ap.add_argument('-o', '--output', help = 'file to save out')
-    args = vars(ap.parse_args())
-    channel = args['channel']
+    args = get_args()
 
-    channel_name = find_channel_by('id', channel)
-    print channel_name
-    output = args['output'] or channel_name
+    channel = get_channel_for(args)
+    dump_path = write_path_for(channel['name'], args)
 
-    chan_path = ensure_dir('./output/channels/{}/messages/'.format(channel_name))
-    dump_path    = '{}/{}.json'.format(chan_path, output)
-
-    try:
-        old_json = load_json(dump_path)
-    except Exception as e:
-        old_json = []
-        print('No existing messages, starting from scratch...')
+    old_messages = load_channel(dump_path)
 
     slack_args = {
-        'channel': channel,
-        'oldest': old_json[0]['ts'] if len(old_json) else oldest_time,
+        'channel': channel['id'],
+        'oldest': scrape_start_time(old_messages, args['update']),
         'count': '700',
     }
-
     new_messages = scrape_slack(config['token'], slack_args)
 
-    if len(new_messages):
-        all_messages = new_messages + old_json
-        dump_json(dump_path, all_messages)
+    write_channel(new_messages, old_messages, args['update'], dump_path)
+

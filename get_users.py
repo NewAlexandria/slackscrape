@@ -1,22 +1,14 @@
 #!/usr/bin/env python
-from json_utils import load_json, dump_json
+from json_utils import *
 from slackclient import SlackClient
 import operator
 import os
 import argparse
 
-def ensure_dir(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    return directory
-
 config = load_json('./env.json')
 
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser()
-    ap.add_argument('-u', '--update', help = 'update channels', action="store_true")
-    args = vars(ap.parse_args())
+    args = get_args()
 
     slack_args = {
         'presence': 1

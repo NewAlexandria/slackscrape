@@ -33,7 +33,7 @@ Will get all channels messages and update with any new messages it finds and wri
 
 `python get_channels_info.py -u [optional update existing]`
 
-eg: `python get_channels_info.py -u
+eg: `python get_channels_info.py -u`
 
 Will get all channels metadata and write to
 `output/channels/<channel>/info/<channel>.json`

@@ -36,3 +36,12 @@ Praise demarcation is part of many new-wave HR SaaS, that seeks to understand wh
 * support/praise
 * possible irony
 * niche Mood
+
+#### Compares
+
+* https://evenfinancial.slack.com/apps/A6SRA97NJ-leapsome
+* https://praise.ly/
+* https://slackhq.com/celebrating-and-supporting-your-teammates-in-slack
+* https://www.15five.com/best-self-review/
+* https://soapboxhq.com/
+
