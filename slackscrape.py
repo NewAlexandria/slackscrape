@@ -58,10 +58,8 @@ if __name__ == '__main__':
         channel_name = find_channel_by('id', channel)
 
     print( [channel_name, channel] )
-    output = args['output'] or channel_name
 
-    chan_path = ensure_dir('./output/channels/{}/messages/'.format(channel_name))
-    dump_path    = '{}/{}.json'.format(chan_path, output)
+    dump_path = write_path(channel_name, args)
 
     try:
         old_json = load_json(dump_path)

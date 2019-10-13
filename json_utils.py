@@ -16,5 +16,11 @@ def dump_json(path, data):
 def ensure_dir(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
-
     return directory
+
+def write_path(channel_name, args, subdir='messages'):
+    output = args['output'] or channel_name
+    chan_path = ensure_dir('./output/channels/{}/{}/'.format(channel_name, subdir))
+    return  '{}/{}.json'.format(chan_path, output)
+
+

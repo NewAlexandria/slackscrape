@@ -30,9 +30,7 @@ if __name__ == '__main__':
     for idx, channel in enumerate(sorted_channels(args)):
         chan_name = channel['name'].encode('utf-8')
         print('{} | {} - {} MEMBERS'.format(idx, chan_name, channel['num_members']))
-        chan_path = ensure_dir('./output/channels/{}'.format(chan_name))
-        msg_path  = ensure_dir('{}/messages'.format(chan_path))
-        dump_path = '{}/{}.json'.format(msg_path, chan_name)
+        dump_path = write_path(chan_name, args)
 
         try:
             old_json = load_json(dump_path)
