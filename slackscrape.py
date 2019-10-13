@@ -46,11 +46,11 @@ if __name__ == '__main__':
     args = get_args()
 
     if args['channel_name']:
-        channel_name = args['channel_name']
+        channel_name = args['channel_name'].encode('utf-8')
         channel = find_channel_by('name', channel_name, 'id')
     else:
         channel = args['channel']
-        channel_name = find_channel_by('id', channel)
+        channel_name = find_channel_by('id', channel).encode('utf-8')
 
     print( [channel_name, channel] )
 
@@ -85,16 +85,5 @@ if __name__ == '__main__':
     }
     print( slack_args )
 
-    new_messages = scrape_slack(config['token'], slack_args)
-
-    print( [len(new_messages),len(old_json),args['update']] )
-
-    if len(new_messages) and args['update']:
-        all_messages = json.dumps(new_messages) + str(old_json)
-    elif not len(new_messages) and args['update']:
-        all_messages = str(old_json)
-    else:
-        all_messages = json.dumps(new_messages)
-
-    with open(dump_path, "w") as text_file: text_file.write( all_messages )
+    write_channel(slack_args, old_json, args, config)
 

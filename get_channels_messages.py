@@ -44,14 +44,6 @@ if __name__ == '__main__':
             'count': '700',
         }
 
-        new_messages = scrape_slack(config['token'], slack_args)
+        write_channel(slack_args, old_json, args, config)
 
-        if len(new_messages) and args['update']:
-            all_messages = new_messages + old_json
-        elif not len(new_messages) and args['update']:
-            all_messages = old_json
-        else:
-            all_messages = new_messages
-
-        dump_json(dump_path, all_messages)
         time.sleep(1)

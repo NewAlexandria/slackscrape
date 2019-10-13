@@ -23,6 +23,20 @@ def write_path(channel_name, args, subdir='messages'):
     chan_path = ensure_dir('./output/channels/{}/{}/'.format(channel_name, subdir))
     return  '{}/{}.json'.format(chan_path, output)
 
+def write_channel(slack_args, old_json, args, config):
+    new_messages = scrape_slack(config['token'], slack_args)
+
+    print( [len(new_messages),len(old_json),args['update']] )
+
+    if len(new_messages) and args['update']:
+        all_messages = json.dumps(new_messages) + str(old_json)
+    elif not len(new_messages) and args['update']:
+        all_messages = str(old_json)
+    else:
+        all_messages = json.dumps(new_messages)
+
+    with open(dump_path, "w") as text_file: text_file.write( all_messages )
+
 def get_args():
     ap = argparse.ArgumentParser()
     ap.add_argument('-c', '--channel', help = 'channel id to scrape')
