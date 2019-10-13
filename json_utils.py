@@ -19,10 +19,26 @@ def ensure_dir(directory):
         os.makedirs(directory)
     return directory
 
-def write_path(channel_name, args, subdir='messages'):
+def write_path_for(channel_name, args, subdir='messages'):
     output = args['output'] or channel_name
     chan_path = ensure_dir('./output/channels/{}/{}/'.format(channel_name, subdir))
     return  '{}/{}.json'.format(chan_path, output)
+
+def load_channel(dump_path):
+    try:
+        old_json = load_json(dump_path)
+    except Exception as e:
+        dump_path_is = os.path.isfile(dump_path)
+        if dump_path_is:
+            with open(dump_path, 'r') as myfile: old_json = myfile.read()
+            print('Existing messages, but there was a problem parsing. Using raw file.')
+        else:
+            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+            message = template.format(type(e).__name__, e.args)
+            print(message)
+            old_json = []
+    print( [len(old_json),len(str(old_json))] )
+    return old_json
 
 def write_channel(new_messages, old_json, update, dump_path):
 

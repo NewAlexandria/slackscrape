@@ -4,8 +4,6 @@ from slackclient import SlackClient
 from get_channels_info import *
 
 rate_limit_sec = 1.0  # default rate limiting, for import callers
-oldest_time = '' # 1467331200
-channel_oldest_time = None
 
 def get_messages(sc, slack_args, messages, filter_func):
     history = sc.api_call("channels.history", **slack_args)
@@ -64,21 +62,9 @@ if __name__ == '__main__':
 
     print( [channel_name, channel] )
 
-    dump_path = write_path(channel_name, args)
+    dump_path = write_path_for(channel_name, args)
 
-    try:
-        old_json = load_json(dump_path)
-    except Exception as e:
-        dump_path_is = os.path.isfile(dump_path)
-        if dump_path_is:
-            with open(dump_path, 'r') as myfile: old_json = myfile.read()
-            print('Existing messages, but there was a problem parsing. Using raw file.')
-        else:
-            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
-            message = template.format(type(e).__name__, e.args)
-            print(message)
-            old_json = []
-    print( [len(old_json),len(str(old_json))] )
+    old_json = load_channel(dump_path)
 
     slack_args = {
         'channel': channel,
