@@ -51,9 +51,6 @@ def store_channel_info(args):
     return channels
 
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser()
-    ap.add_argument('-u', '--update', help = 'update channels', action="store_true")
-    args = vars(ap.parse_args())
-
+    args = get_args()
     store_channel_info(args)
 

@@ -26,28 +26,28 @@ def write_path_for(channel_name, args, subdir='messages'):
 
 def load_channel(dump_path):
     try:
-        old_json = load_json(dump_path)
+        old_messages = load_json(dump_path)
     except Exception as e:
         dump_path_is = os.path.isfile(dump_path)
         if dump_path_is:
-            with open(dump_path, 'r') as myfile: old_json = myfile.read()
+            with open(dump_path, 'r') as myfile: old_messages = myfile.read()
             print('Existing messages, but there was a problem parsing. Using raw file.')
         else:
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             message = template.format(type(e).__name__, e.args)
             print(message)
-            old_json = []
-    print( [len(old_json),len(str(old_json))] )
-    return old_json
+            old_messages = []
+    print( [len(old_messages),len(str(old_messages))] )
+    return old_messages
 
-def write_channel(new_messages, old_json, update, dump_path):
+def write_channel(new_messages, old_messages, update, dump_path):
 
-    print( [len(new_messages),len(old_json),update] )
+    print( [len(new_messages),len(old_messages),update] )
 
     if len(new_messages) and update:
-        all_messages = json.dumps(new_messages) + str(old_json)
+        all_messages = json.dumps(new_messages) + str(old_messages)
     elif not len(new_messages) and update:
-        all_messages = str(old_json)
+        all_messages = str(old_messages)
     else:
         all_messages = json.dumps(new_messages)
 

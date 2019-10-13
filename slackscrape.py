@@ -30,13 +30,13 @@ def scrape_slack(token, slack_args, filter_func = lambda x: x):
     print('Done fetching messages. Found {} in total.'.format(len(results['messages'])))
     return results['messages']
 
-def scrape_start_time(old_json, update):
+def scrape_start_time(old_messages, update):
     channel_oldest_time = ''
     if update:
         channel_oldest_time = None
-        if len(old_json):
+        if len(old_messages):
             try:
-                channel_oldest_time = old_json[0]['ts']
+                channel_oldest_time = old_messages[0]['ts']
             except Exception as e:
                 channel_oldest_time = ''
     return channel_oldest_time
@@ -47,12 +47,7 @@ def find_channel_by(key, val, return_key='name'):
         if chan[key] == val:
             return chan[return_key]
 
-if __name__ == '__main__':
-    config = load_json('./env.json')
-    rate_limit_sec = 0.500
-    
-    args = get_args()
-
+def get_channel_for(args):
     if args['channel_name']:
         channel_name = args['channel_name'].encode('utf-8')
         channel = find_channel_by('name', channel_name, 'id')
@@ -61,17 +56,26 @@ if __name__ == '__main__':
         channel_name = find_channel_by('id', channel).encode('utf-8')
 
     print( [channel_name, channel] )
+    return {'id': channel, 'name': channel_name}
 
-    dump_path = write_path_for(channel_name, args)
 
-    old_json = load_channel(dump_path)
+if __name__ == '__main__':
+    config = load_json('./env.json')
+    rate_limit_sec = 0.500
+    
+    args = get_args()
+
+    channel = get_channel_for(args)
+    dump_path = write_path_for(channel['name'], args)
+
+    old_messages = load_channel(dump_path)
 
     slack_args = {
-        'channel': channel,
-        'oldest': scrape_start_time(old_json, args['update']),
+        'channel': channel['id'],
+        'oldest': scrape_start_time(old_messages, args['update']),
         'count': '700',
     }
     new_messages = scrape_slack(config['token'], slack_args)
 
-    write_channel(new_messages, old_json, args['update'], dump_path)
+    write_channel(new_messages, old_messages, args['update'], dump_path)
 

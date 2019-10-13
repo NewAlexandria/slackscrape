@@ -4,7 +4,6 @@ from slackscrape import scrape_slack, scrape_start_time
 from slackclient import SlackClient
 import operator
 import os
-import pdb
 
 config = load_json('./env.json')
 
@@ -23,19 +22,20 @@ if __name__ == '__main__':
     args = get_args()
 
     for idx, channel in enumerate(sorted_channels(args)):
-        chan_name = channel['name'].encode('utf-8')
-        print('{} | {} - {} MEMBERS'.format(idx, chan_name, channel['num_members']))
-        dump_path = write_path_for(chan_name, args)
+        channel['name'] = channel['name'].encode('utf-8')
+        print('{} | {} - {} MEMBERS'.format(idx, channel['name'], channel['num_members']))
 
-        old_json = load_channel(dump_path)
+        dump_path = write_path_for(channel['name'], args)
+
+        old_messages = load_channel(dump_path)
 
         slack_args = {
             'channel': channel['id'],
-            'oldest': scrape_start_time(old_json, args['update']),
+            'oldest': scrape_start_time(old_messages, args['update']),
             'count': '700',
         }
         new_messages = scrape_slack(config['token'], slack_args)
 
-        write_channel(new_messages, old_json, args['update'], dump_path)
+        write_channel(new_messages, old_messages, args['update'], dump_path)
 
         time.sleep(1)
