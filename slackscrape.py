@@ -62,7 +62,7 @@ def get_channel_for(args):
 if __name__ == '__main__':
     config = load_json('./env.json')
     rate_limit_sec = 0.500
-    
+
     args = get_args()
 
     channel = get_channel_for(args)
