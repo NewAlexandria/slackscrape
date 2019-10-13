@@ -2,7 +2,6 @@
 from json_utils import *
 from slackclient import SlackClient
 from get_channels_info import *
-import argparse
 
 rate_limit_sec = 1.0  # default rate limiting, for import callers
 oldest_time = '' # 1467331200
@@ -83,7 +82,7 @@ if __name__ == '__main__':
         'oldest': channel_oldest_time if channel_oldest_time else oldest_time,
         'count': '700',
     }
-    print( slack_args )
+    new_messages = scrape_slack(config['token'], slack_args)
 
-    write_channel(slack_args, old_json, args, config)
+    write_channel(new_messages, old_json, args['update'], dump_path)
 

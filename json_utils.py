@@ -4,6 +4,7 @@ from operator import itemgetter
 from datetime import datetime
 import time
 import os
+import argparse
 
 def load_json(path):
     with io.open(path, encoding='utf-8') as f:
@@ -23,14 +24,13 @@ def write_path(channel_name, args, subdir='messages'):
     chan_path = ensure_dir('./output/channels/{}/{}/'.format(channel_name, subdir))
     return  '{}/{}.json'.format(chan_path, output)
 
-def write_channel(slack_args, old_json, args, config):
-    new_messages = scrape_slack(config['token'], slack_args)
+def write_channel(new_messages, old_json, update, dump_path):
 
-    print( [len(new_messages),len(old_json),args['update']] )
+    print( [len(new_messages),len(old_json),update] )
 
-    if len(new_messages) and args['update']:
+    if len(new_messages) and update:
         all_messages = json.dumps(new_messages) + str(old_json)
-    elif not len(new_messages) and args['update']:
+    elif not len(new_messages) and update:
         all_messages = str(old_json)
     else:
         all_messages = json.dumps(new_messages)

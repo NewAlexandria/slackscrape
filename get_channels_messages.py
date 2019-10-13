@@ -2,7 +2,6 @@
 from json_utils import *
 from slackscrape import scrape_slack
 from slackclient import SlackClient
-import argparse
 import operator
 import os
 import pdb
@@ -43,7 +42,8 @@ if __name__ == '__main__':
             'oldest': oldest_time,
             'count': '700',
         }
+        new_messages = scrape_slack(config['token'], slack_args)
 
-        write_channel(slack_args, old_json, args, config)
+        write_channel(new_messages, old_json, args['update'], dump_path)
 
         time.sleep(1)
