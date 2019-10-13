@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 from json_utils import *
 from slackscrape import scrape_slack
 from slackclient import SlackClient
@@ -58,4 +58,5 @@ if __name__ == '__main__':
         else:
             all_messages = new_messages
 
+        dump_json(dump_path, all_messages)
         time.sleep(1)

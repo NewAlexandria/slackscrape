@@ -66,8 +66,24 @@ if __name__ == '__main__':
     try:
         old_json = load_json(dump_path)
     except Exception as e:
-        old_json = []
-        print('No existing messages, starting from scratch...')
+        dump_path_is = os.path.isfile(dump_path)
+        if dump_path_is:
+            with open(dump_path, 'r') as myfile: old_json = myfile.read()
+            print('Existing messages, but there was a problem parsing. Using raw file.')
+        else:
+            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+            message = template.format(type(e).__name__, e.args)
+            print(message)
+            old_json = []
+    print( [len(old_json),len(str(old_json))] )
+
+    if args['update']:
+        channel_oldest_time = None
+        if len(old_json):
+            try:
+                channel_oldest_time = old_json[0]['ts']
+            except Exception as e:
+                channel_oldest_time = ''
 
     slack_args = {
         'channel': channel,
@@ -78,6 +94,14 @@ if __name__ == '__main__':
 
     new_messages = scrape_slack(config['token'], slack_args)
 
-    if len(new_messages):
-        all_messages = new_messages + old_json
-        dump_json(dump_path, all_messages)
+    print( [len(new_messages),len(old_json),args['update']] )
+
+    if len(new_messages) and args['update']:
+        all_messages = json.dumps(new_messages) + str(old_json)
+    elif not len(new_messages) and args['update']:
+        all_messages = str(old_json)
+    else:
+        all_messages = json.dumps(new_messages)
+
+    with open(dump_path, "w") as text_file: text_file.write( all_messages )
+
