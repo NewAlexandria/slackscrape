@@ -6,6 +6,7 @@ import argparse
 
 rate_limit_sec = 1.0  # default rate limiting, for import callers
 oldest_time = '' # 1467331200
+channel_oldest_time = None
 
 def get_messages(sc, slack_args, messages, filter_func):
     history = sc.api_call("channels.history", **slack_args)
@@ -44,12 +45,19 @@ if __name__ == '__main__':
 
     ap = argparse.ArgumentParser()
     ap.add_argument('-c', '--channel', help = 'channel id to scrape')
+    ap.add_argument('-C', '--channel-name', help = 'channel name to scrape')
     ap.add_argument('-o', '--output', help = 'file to save out')
+    ap.add_argument('-u', '--update', help = 'update channels', action="store_true")
     args = vars(ap.parse_args())
-    channel = args['channel']
 
-    channel_name = find_channel_by('id', channel)
-    print channel_name
+    if args['channel_name']:
+        channel_name = args['channel_name']
+        channel = find_channel_by('name', channel_name, 'id')
+    else:
+        channel = args['channel']
+        channel_name = find_channel_by('id', channel)
+
+    print( [channel_name, channel] )
     output = args['output'] or channel_name
 
     chan_path = ensure_dir('./output/channels/{}/messages/'.format(channel_name))
@@ -63,9 +71,10 @@ if __name__ == '__main__':
 
     slack_args = {
         'channel': channel,
-        'oldest': old_json[0]['ts'] if len(old_json) else oldest_time,
+        'oldest': channel_oldest_time if channel_oldest_time else oldest_time,
         'count': '700',
     }
+    print( slack_args )
 
     new_messages = scrape_slack(config['token'], slack_args)
 
