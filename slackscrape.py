@@ -42,13 +42,8 @@ def find_channel_by(key, val, return_key='name'):
 if __name__ == '__main__':
     config = load_json('./env.json')
     rate_limit_sec = 0.500
-
-    ap = argparse.ArgumentParser()
-    ap.add_argument('-c', '--channel', help = 'channel id to scrape')
-    ap.add_argument('-C', '--channel-name', help = 'channel name to scrape')
-    ap.add_argument('-o', '--output', help = 'file to save out')
-    ap.add_argument('-u', '--update', help = 'update channels', action="store_true")
-    args = vars(ap.parse_args())
+    
+    args = get_args()
 
     if args['channel_name']:
         channel_name = args['channel_name']

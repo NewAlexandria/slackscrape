@@ -22,10 +22,7 @@ def sorted_channels(args):
     return sorted(channels, key=lambda x: x['num_members'], reverse=True)
 
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser()
-    ap.add_argument('-a', '--archived', help = 'include archived channels', action="store_true")
-    ap.add_argument('-u', '--update', help = 'update channels', action="store_true")
-    args = vars(ap.parse_args())
+    args = get_args()
 
     for idx, channel in enumerate(sorted_channels(args)):
         chan_name = channel['name'].encode('utf-8')

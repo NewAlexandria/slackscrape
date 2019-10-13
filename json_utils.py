@@ -23,4 +23,12 @@ def write_path(channel_name, args, subdir='messages'):
     chan_path = ensure_dir('./output/channels/{}/{}/'.format(channel_name, subdir))
     return  '{}/{}.json'.format(chan_path, output)
 
+def get_args():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('-c', '--channel', help = 'channel id to scrape')
+    ap.add_argument('-C', '--channel-name', help = 'channel name to scrape')
+    ap.add_argument('-o', '--output', help = 'file to save out')
+    ap.add_argument('-u', '--update', help = 'update channels', action="store_true")
+    return vars(ap.parse_args())
+
 
