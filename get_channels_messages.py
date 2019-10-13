@@ -34,12 +34,9 @@ if __name__ == '__main__':
             old_json = []
             print('No existing messages, starting from scratch...')
 
-        if args['update']:
-            if len(old_json): oldest_time = old_json[0]['ts']
-
         slack_args = {
             'channel': channel['id'],
-            'oldest': oldest_time,
+            'oldest': scrape_start_time(old_json ,args['update']),
             'count': '700',
         }
         new_messages = scrape_slack(config['token'], slack_args)

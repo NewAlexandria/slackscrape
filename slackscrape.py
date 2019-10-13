@@ -32,6 +32,17 @@ def scrape_slack(token, slack_args, filter_func = lambda x: x):
     print('Done fetching messages. Found {} in total.'.format(len(results['messages'])))
     return results['messages']
 
+def scrape_start_time(old_json, update):
+    channel_oldest_time = ''
+    if update:
+        channel_oldest_time = None
+        if len(old_json):
+            try:
+                channel_oldest_time = old_json[0]['ts']
+            except Exception as e:
+                channel_oldest_time = ''
+    return channel_oldest_time
+
 def find_channel_by(key, val, return_key='name'):
     channels = all_channels_info('')
     for chan in channels:
@@ -69,17 +80,9 @@ if __name__ == '__main__':
             old_json = []
     print( [len(old_json),len(str(old_json))] )
 
-    if args['update']:
-        channel_oldest_time = None
-        if len(old_json):
-            try:
-                channel_oldest_time = old_json[0]['ts']
-            except Exception as e:
-                channel_oldest_time = ''
-
     slack_args = {
         'channel': channel,
-        'oldest': channel_oldest_time if channel_oldest_time else oldest_time,
+        'oldest': scrape_start_time(old_json, args['update']),
         'count': '700',
     }
     new_messages = scrape_slack(config['token'], slack_args)
